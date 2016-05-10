@@ -120,10 +120,10 @@ class MFRC522:
         self.Write_MFRC522(self.CommandReg, self.PCD_RESETPHASE)
 
     def Write_MFRC522(self, addr, val):
-        spi.transfer(((addr<<1)&0x7E,val))
+        spi.transfer(((addr<<1)&0x7E, val))
 
     def Read_MFRC522(self, addr):
-        val = spi.transfer((((addr<<1)&0x7E) | 0x80,0))
+        val = spi.transfer((((addr<<1)&0x7E) | 0x80, 0))
         return val[1]
 
     def SetBitMask(self, reg, mask):
@@ -142,7 +142,7 @@ class MFRC522:
     def AntennaOff(self):
         self.ClearBitMask(self.TxControlReg, 0x03)
 
-    def MFRC522_ToCard(self,command,sendData):
+    def MFRC522_ToCard(self, command, sendData):
         backData = []
         backLen = 0
         status = self.MI_ERR
@@ -210,7 +210,7 @@ class MFRC522:
             else:
                 status = self.MI_ERR
 
-        return (status,backData,backLen)
+        return (status, backData, backLen)
 
 
     def MFRC522_Request(self, reqMode):
@@ -221,12 +221,12 @@ class MFRC522:
         self.Write_MFRC522(self.BitFramingReg, 0x07)
 
         TagType.append(reqMode)
-        (status,backData,backBits) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, TagType)
+        (status, backData, backBits) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, TagType)
 
         if ((status != self.MI_OK) | (backBits != 0x10)):
             status = self.MI_ERR
 
-        return (status,backBits)
+        return (status, backBits)
 
 
     def MFRC522_Anticoll(self):
@@ -240,7 +240,7 @@ class MFRC522:
         serNum.append(self.PICC_ANTICOLL)
         serNum.append(0x20)
 
-        (status,backData,backBits) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE,serNum)
+        (status, backData, backBits) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, serNum)
 
         if(status == self.MI_OK):
             i = 0
@@ -253,7 +253,7 @@ class MFRC522:
             else:
                 status = self.MI_ERR
 
-        return (status,backData)
+        return (status, backData)
 
     def CalulateCRC(self, pIndata):
         self.ClearBitMask(self.DivIrqReg, 0x04)
@@ -290,7 +290,7 @@ class MFRC522:
 
         if (status == self.MI_OK) and (backLen == 0x18):
             print("Size: " + str(backData[0]))
-            return        backData[0]
+            return backData[0]
         else:
             return 0
 
@@ -313,10 +313,10 @@ class MFRC522:
         # Next we append the first 4 bytes of the UID
         while(i < 4):
             buff.append(serNum[i])
-            i = i +1
+            i = i + 1
 
         # Now we start the authentication itself
-        (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_AUTHENT,buff)
+        (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_AUTHENT, buff)
 
         # Check if an error occurred
         if not(status == self.MI_OK):
@@ -365,7 +365,7 @@ class MFRC522:
             crc = self.CalulateCRC(buf)
             buf.append(crc[0])
             buf.append(crc[1])
-            (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE,buf)
+            (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, buf)
             if not(status == self.MI_OK) or not(backLen == 4) or not((backData[0] & 0x0F) == 0x0A):
                 print("Error while writing")
             if status == self.MI_OK:
