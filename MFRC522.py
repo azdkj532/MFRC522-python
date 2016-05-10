@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-import RPi.GPIO as GPIO
 import spi
 import signal
 import time
@@ -108,11 +107,13 @@ class MFRC522:
 
     serNum = []
 
-    def __init__(self, dev='/dev/spidev0.0', spd=1000000):
-        spi.openSPI(device=dev,speed=spd)
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(22, GPIO.OUT)
-        GPIO.output(self.NRSTPD, 1)
+    def __init__(self, dev=None, spd=1000000):
+        if dev is None:
+            self._dev = '/dev/spidev0.0'
+        else:
+            self._dev = dev
+        self._spd = spd
+        self._ret = spi.openSPI(device=dev, speed=spd)
         self.MFRC522_Init()
 
     def MFRC522_Reset(self):
@@ -382,7 +383,6 @@ class MFRC522:
             i = i+1
 
     def MFRC522_Init(self):
-        GPIO.output(self.NRSTPD, 1)
 
         self.MFRC522_Reset()
 
@@ -394,3 +394,13 @@ class MFRC522:
         self.Write_MFRC522(self.TxAutoReg, 0x40)
         self.Write_MFRC522(self.ModeReg, 0x3D)
         self.AntennaOn()
+
+
+class MFRC522Reader(object):
+    def __enter__(self):
+        self.reader_obj = MFRC522()
+        return self.reader_obj
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        spi.closeSPI()
+
