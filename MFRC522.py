@@ -113,7 +113,7 @@ class MFRC522:
         else:
             self._dev = dev
         self._spd = spd
-        self._ret = spi.openSPI(device=dev, speed=spd)
+        self._ret = spi.openSPI(device=self._dev, speed=self._spd)
         self.MFRC522_Init()
 
     def MFRC522_Reset(self):
