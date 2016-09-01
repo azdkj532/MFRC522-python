@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-import RPi.GPIO as GPIO
 import MFRC522
 import signal
 
@@ -12,7 +11,6 @@ def end_read(signal,frame):
     global continue_reading
     print("Ctrl+C(captured, ending read.")
     continue_reading = False
-    GPIO.cleanup()
 
 # Hook the SIGINT
 signal.signal(signal.SIGINT, end_read)
@@ -61,17 +59,16 @@ while continue_reading:
 
             print("Sector 8 looked like this:")
             # Read block 8
-            MIFAREReader.MFRC522_Read(8)
-            print "\n"
+            print(MIFAREReader.MFRC522_Read(8))
+            print("\n")
 
             print("Sector 8 will now be filled with 0xFF:")
             # Write the data
             MIFAREReader.MFRC522_Write(8, data)
-            print("\n")
 
             print("It now looks like this:")
             # Check to see if it was written
-            MIFAREReader.MFRC522_Read(8)
+            print(MIFAREReader.MFRC522_Read(8))
             print("\n")
 
             data = []
@@ -81,11 +78,10 @@ while continue_reading:
 
             print("Now we fill it with 0x00:")
             MIFAREReader.MFRC522_Write(8, data)
-            print("\n")
 
             print("It is now empty:")
             # Check to see if it was written
-            MIFAREReader.MFRC522_Read(8)
+            print(MIFAREReader.MFRC522_Read(8))
             print("\n")
 
             # Stop

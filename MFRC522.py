@@ -400,7 +400,7 @@ class MFRC522:
             status = self.MFRC522_Auth(self.PICC_AUTHENT1A, i, key, uid)
             # Check if authenticated
             if status == self.MI_OK:
-                self.MFRC522_Read(i)
+                print(self.MFRC522_Read(i))
             else:
                 raise AuthError()
             i = i+1
