@@ -44,45 +44,32 @@ while continue_reading:
         MIFAREReader.MFRC522_SelectTag(uid)
 
         # Authenticate
-        status = MIFAREReader.MFRC522_Auth(MIFAREReader.PICC_AUTHENT1A, 8, key, uid)
-        print("\n")
+        status = MIFAREReader.MFRC522_Auth(MIFAREReader.PICC_AUTHENT1A, 16, key, uid)
 
         # Check if authenticated
         if status == MIFAREReader.MI_OK:
 
             # Variable for the data to write
-            data = []
+            data = [0] * 16
+            content = input()
+            content = content[:16]
 
             # Fill the data with 0xFF
-            for x in range(0,16):
-                data.append(0xFF)
+            for idx, val in enumerate(content):
+                data[idx] = ord(val)
 
-            print("Sector 8 looked like this:")
-            # Read block 8
-            print(MIFAREReader.MFRC522_Read(8))
-            print("\n")
+            # Read block 16
+            output = MIFAREReader.MFRC522_Read(16)
+            print("Sector 16 looked like this: ", data)
 
-            print("Sector 8 will now be filled with 0xFF:")
             # Write the data
-            MIFAREReader.MFRC522_Write(8, data)
+            output = MIFAREReader.MFRC522_Write(16, data)
+            print("Sector 16 will now be filled with 0xFF:")
 
-            print("It now looks like this:")
+            output = MIFAREReader.MFRC522_Read(16)
+            print("It now looks like this: ", output)
+            print("It now looks like this: ", ''.join(chr(o) for o in output))
             # Check to see if it was written
-            print(MIFAREReader.MFRC522_Read(8))
-            print("\n")
-
-            data = []
-            # Fill the data with 0x00
-            for x in range(0,16):
-                data.append(0x00)
-
-            print("Now we fill it with 0x00:")
-            MIFAREReader.MFRC522_Write(8, data)
-
-            print("It is now empty:")
-            # Check to see if it was written
-            print(MIFAREReader.MFRC522_Read(8))
-            print("\n")
 
             # Stop
             MIFAREReader.MFRC522_StopCrypto1()
